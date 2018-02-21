@@ -7,16 +7,12 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class ControlElevator extends Command {
+public class DriveArcade extends Command {
 
-	boolean negate;
-	
-	
-    public ControlElevator() {
-        // Use requires() here to declare subsystem dependencies
-        // eg. requires(chassis);
-    	requires(Robot.elevator);
-    	negate = false;
+public DriveArcade() {
+        
+    	requires(Robot.driveTrain);
+    	
     }
 
     // Called just before this Command runs the first time
@@ -24,25 +20,13 @@ public class ControlElevator extends Command {
     }
 
     // Called repeatedly when this Command is scheduled to run
-    protected void execute() {    	
-    	if(Robot.oi.getElevatorDown()){
-    		Robot.elevator.setNegateValue(-1);
-    		negate = true;
-    	}
-    	else{
-    		Robot.elevator.setNegateValue(1);
-    		negate = false;
-    	}
+    protected void execute() {
+    	//Variables for drivetrain changed -- .6 is safe -- 0.7 is not 
+    	Robot.driveTrain.driveArcade(Robot.oi.getLeft()*0.8, Robot.oi.getRightX()*0.8);
     	
-    	if(Robot.oi.getElevatorUp()){
-    		Robot.elevator.operateElevator(true);
-    	}
-    	else{
-    		Robot.elevator.operateElevator(false);
-    	}
     }
-
-    //
+    
+    // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
         return false;
     }

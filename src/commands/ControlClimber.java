@@ -7,15 +7,15 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class ControlElevator extends Command {
+public class ControlClimber extends Command {
 
 	boolean negate;
 	
 	
-    public ControlElevator() {
+    public ControlClimber() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
-    	requires(Robot.elevator);
+    	requires(Robot.climber);
     	negate = false;
     }
 
@@ -24,21 +24,21 @@ public class ControlElevator extends Command {
     }
 
     // Called repeatedly when this Command is scheduled to run
-    protected void execute() {    	
-    	if(Robot.oi.getElevatorDown()){
-    		Robot.elevator.setNegateValue(-1);
+    protected void execute() {
+    	if(Robot.oi.getClimbReverse()){
+    		Robot.climber.setNegateValue(-1);
     		negate = true;
     	}
     	else{
-    		Robot.elevator.setNegateValue(1);
+    		Robot.climber.setNegateValue(1);
     		negate = false;
     	}
     	
-    	if(Robot.oi.getElevatorUp()){
-    		Robot.elevator.operateElevator(true);
+    	if(Robot.oi.getClimb()){
+    		Robot.climber.controlClimber(true);
     	}
     	else{
-    		Robot.elevator.operateElevator(false);
+    		Robot.climber.controlClimber(false);
     	}
     }
 

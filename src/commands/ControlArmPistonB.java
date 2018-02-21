@@ -7,16 +7,11 @@ import edu.wpi.first.wpilibj.command.Command;
 /**
  *
  */
-public class ControlElevator extends Command {
+public class ControlArmPistonB extends Command {
 
-	boolean negate;
-	
-	
-    public ControlElevator() {
+    public ControlArmPistonB() {
         // Use requires() here to declare subsystem dependencies
-        // eg. requires(chassis);
-    	requires(Robot.elevator);
-    	negate = false;
+        requires(Robot.armPistonB);
     }
 
     // Called just before this Command runs the first time
@@ -24,25 +19,12 @@ public class ControlElevator extends Command {
     }
 
     // Called repeatedly when this Command is scheduled to run
-    protected void execute() {    	
-    	if(Robot.oi.getElevatorDown()){
-    		Robot.elevator.setNegateValue(-1);
-    		negate = true;
-    	}
-    	else{
-    		Robot.elevator.setNegateValue(1);
-    		negate = false;
-    	}
-    	
-    	if(Robot.oi.getElevatorUp()){
-    		Robot.elevator.operateElevator(true);
-    	}
-    	else{
-    		Robot.elevator.operateElevator(false);
-    	}
+    protected void execute() {
+    	Robot.armPistonB.controlPiston(Robot.oi.getArmPistonBOpen(), 
+    			Robot.oi.getArmPistonBClose());
     }
 
-    //
+    // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
         return false;
     }
