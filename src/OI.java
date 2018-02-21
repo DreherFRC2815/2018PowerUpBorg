@@ -25,35 +25,73 @@ public class OI {
 		return xbox.getRawAxis(1);
 	}
 	
-	public double getRight(){
+	public double getRightX(){
 		if(Math.abs(xbox.getRawAxis(4)) <= 0.1){
 			return 0;
 		}
 		return xbox.getRawAxis(4);
 	}
 	
-	public boolean getAutoDrive(){
-		return xbox.getRawButton(1);
+	public double getRightY(){
+		if(Math.abs(xbox.getRawAxis(5)) <= 0.1){
+			return 0;
+		}
+		return xbox.getRawAxis(5);
 	}
 	
-	public boolean getCollectCube(){
+	public double getCollect(){
+		if(Math.abs(flight.getRawAxis(1)) <= 0.1){
+			return 0;
+		}
+		return flight.getRawAxis(1);
+	}
+	
+	/*public double getElevatorUp(){
+		if(Math.abs(flight.getRawAxis(0)) <= 0.1){
+			return 0;
+		}
+		return flight.getRawAxis(0);
+	}
+	*/
+	
+	public boolean getCollectorPistonOpen(){
 		return flight.getRawButton(1);
 	}
 	
-	public boolean getPlaceCube(){
+	public boolean getCollectorPistonClose(){
 		return flight.getRawButton(2);
+	}
+	
+	public boolean getArmPistonBOpen(){
+		return flight.getRawButton(9);
+	}
+	
+	public boolean getArmPistonBClose(){
+		return flight.getRawButton(10);
+	}
+	
+	public boolean getArmPistonTOpen(){
+		return flight.getRawButton(11);
+	}
+	
+	public boolean getArmPistonTClose(){
+		return flight.getRawButton(12);
 	}
 	
 	public boolean getElevatorUp(){
 		return flight.getRawButton(3);
 	}
-
+	
 	public boolean getElevatorDown(){
 		return flight.getRawButton(4);
 	}
 	
 	public boolean getClimb(){
-		return flight.getRawButton(5);
+		return flight.getRawButton(7);
+	}
+	
+	public boolean getClimbReverse(){
+		return flight.getRawButton(8);
 	}
 	
 }

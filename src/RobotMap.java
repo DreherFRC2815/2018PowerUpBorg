@@ -15,6 +15,10 @@ package org.usfirst.frc.team2815.robot;
  */
 public class RobotMap {
 	
-	public static int[] ElevatorMotors = {0, 1};
+	public static int ElevatorMotor = 2;
+	public static int[] CubeCollectorMotors = {0, 1, 3, 4};
+	public static int[] CollectorPiston = {0, 1};
+	public static int[] ArmPistonB = {2, 3};
+	public static int[] ArmPistonT = {6, 7};
 	
 }

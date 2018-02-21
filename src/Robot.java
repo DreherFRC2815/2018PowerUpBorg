@@ -7,16 +7,35 @@
 
 package org.usfirst.frc.team2815.robot;
 
-import org.usfirst.frc.team2815.robot.commands.ControlElevator;
-import org.usfirst.frc.team2815.robot.commands.DriveTank;
-import org.usfirst.frc.team2815.robot.subsystems.DriveTrain;
-import org.usfirst.frc.team2815.robot.subsystems.Elevator;
-
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import org.usfirst.frc.team2815.robot.autocommands.CenterAuto;
+import org.usfirst.frc.team2815.robot.autocommands.CenterLeftAuto;
+import org.usfirst.frc.team2815.robot.autocommands.CenterRightAuto;
+import org.usfirst.frc.team2815.robot.autocommands.ForwardAuto;
+import org.usfirst.frc.team2815.robot.autocommands.LeftAuto;
+import org.usfirst.frc.team2815.robot.autocommands.LeftTurnAuto;
+import org.usfirst.frc.team2815.robot.autocommands.RightAuto;
+import org.usfirst.frc.team2815.robot.autocommands.RightTurnAuto;
+import org.usfirst.frc.team2815.robot.commands.CollectCube;
+import org.usfirst.frc.team2815.robot.commands.ControlArmPistonB;
+import org.usfirst.frc.team2815.robot.commands.ControlArmPistonT;
+import org.usfirst.frc.team2815.robot.commands.ControlClimber;
+import org.usfirst.frc.team2815.robot.commands.ControlCollectorPiston;
+import org.usfirst.frc.team2815.robot.commands.ControlElevator;
+import org.usfirst.frc.team2815.robot.commands.DriveArcade;
+import org.usfirst.frc.team2815.robot.subsystems.ArmPistonB;
+import org.usfirst.frc.team2815.robot.subsystems.ArmPistonT;
+import org.usfirst.frc.team2815.robot.subsystems.Climber;
+import org.usfirst.frc.team2815.robot.subsystems.CollectorPiston;
+import org.usfirst.frc.team2815.robot.subsystems.CubeCollector;
+import org.usfirst.frc.team2815.robot.subsystems.DriveTrain;
+import org.usfirst.frc.team2815.robot.subsystems.Elevator;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -28,13 +47,31 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends IterativeRobot {
 	
 	public static DriveTrain driveTrain;
+	public static CubeCollector cubeCollector;
+	public static CollectorPiston collectorPiston;
+	public static ArmPistonB armPistonB;
+	public static ArmPistonT armPistonT;
 	public static Elevator elevator;
+	public static Climber climber;
 	public static OI oi;
 
 	Command autonomousCommand;
-	Command driveTank;
+	Command testAuto;
+	Command driveArcade;
+	Command collectCube;
+	Command controlCollectorPiston;
+	Command controlArmPistonB;
+	Command controlArmPistonT;
 	Command controlElevator;
-	SendableChooser<Command> chooser = new SendableChooser<>();
+	Command controlClimber;
+	
+	Command centerRightAuto;
+	Command centerLeftAuto;
+	Command forwardAuto;
+	Command leftTurnAuto;
+	Command rightTurnAuto;
+	
+	SendableChooser chooser = new SendableChooser<>();
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -44,10 +81,31 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		oi = new OI();
 		driveTrain = new DriveTrain();
+		cubeCollector = new CubeCollector();
+		collectorPiston = new CollectorPiston();
+		armPistonB = new ArmPistonB();
+		armPistonT = new ArmPistonT();
 		elevator = new Elevator();
-		//chooser.addObject("My Auto", new MyAutoCommand());
-		driveTank = new DriveTank();
+		climber = new Climber();
+		
+		chooser.addDefault("Center Auto", new CenterAuto());
+		chooser.addObject("Left Auto", new LeftAuto());
+		chooser.addObject("Right Auto", new RightAuto());
+		
+		driveArcade = new DriveArcade();
+		collectCube = new CollectCube();
+		controlCollectorPiston = new ControlCollectorPiston();
+		controlArmPistonB = new ControlArmPistonB();
+		controlArmPistonT = new ControlArmPistonT();
 		controlElevator = new ControlElevator();
+		controlClimber = new ControlClimber();
+		
+		centerRightAuto = new CenterRightAuto();
+		centerLeftAuto = new CenterLeftAuto();
+		forwardAuto = new ForwardAuto();
+		leftTurnAuto = new LeftTurnAuto();
+		rightTurnAuto = new RightTurnAuto();
+		
 		SmartDashboard.putData("Auto mode", chooser);
 	}
 
@@ -79,19 +137,41 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		autonomousCommand = chooser.getSelected();
-
-		/*
-		 * String autoSelected = SmartDashboard.getString("Auto Selector",
-		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-		 * = new MyAutoCommand(); break; case "Default Auto": default:
-		 * autonomousCommand = new ExampleCommand(); break; }
-		 */
-
-		// schedule the autonomous command (example)
-		if (autonomousCommand != null) {
+		autonomousCommand = (Command)chooser.getSelected();
+		
+		SmartDashboard.putString("auto", autonomousCommand.getName());
+		
+		String gameData;
+		gameData = DriverStation.getInstance().getGameSpecificMessage();
+        if(gameData.length() > 0){
+        	if(gameData.charAt(0) == 'L'){
+        		if(autonomousCommand.getName().equals("CenterAuto")){
+        			autonomousCommand = centerLeftAuto;
+        		}
+        		else if(autonomousCommand.getName().equals("LeftAuto")){
+        			autonomousCommand = forwardAuto;
+        		}
+        		else{
+        			autonomousCommand = rightTurnAuto;
+        		}
+        	}
+        	else if(gameData.charAt(0) == 'R'){
+        		if(autonomousCommand.getName().equals("CenterAuto")){
+        			autonomousCommand = centerRightAuto;
+        		}
+        		else if(autonomousCommand.getName().equals("LeftAuto")){
+        			autonomousCommand = leftTurnAuto;
+        		}
+        		else{
+        			autonomousCommand = forwardAuto;
+        		}
+        	}
+		
+		if (autonomousCommand != null){
 			autonomousCommand.start();
-		}
+			}
+		Scheduler.getInstance().removeAll();
+        }
 	}
 
 	/**
@@ -112,8 +192,13 @@ public class Robot extends IterativeRobot {
 			autonomousCommand.cancel();
 		}
 		
-		driveTank.start();
+		driveArcade.start();
+		collectCube.start();
+		controlCollectorPiston.start();
+		controlArmPistonB.start();
+		controlArmPistonT.start();
 		controlElevator.start();
+		controlClimber.start();
 		
 	}
 
